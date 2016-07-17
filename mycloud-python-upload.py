@@ -44,9 +44,12 @@ def checkFileExist(localFilePath, mycloudFilePath):
     itemPath = str(item.get('Path'))
     if (itemPath != mycloudFilePath):
       continue
-    if ('Lenght' in item):
+    if ('Length' in item):
       itemSize = long(item.get('Length'))
       if (itemSize != localFileSize):
+        continue
+    else:
+      if (localFileSize != 0):
         continue
     #itemTicks = long(item.get('ModificationTimeTicks'))
     # if (itemTicks != localFileTimeTicks):
