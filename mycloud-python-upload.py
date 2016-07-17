@@ -113,6 +113,8 @@ for dirpath, dirnames, filenames in os.walk("."):
     if (file.startswith("./")):
       file = file.replace("./", '', 1)
     files.append(file)
+
+# sort files for upload
 files.sort()
 
 # count files for upload
