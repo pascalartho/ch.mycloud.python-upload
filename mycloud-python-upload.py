@@ -38,7 +38,7 @@ def checkFileExist(localFilePath, mycloudFilePath):
   #print "localFileSize:      " + str(localFileSize)
   localFileTime = os.path.getmtime(localFilePath)
   #print "localFileTime:      " + str(localFileTime)
-  localFileTimeTicks = ticks(datetime.fromtimestamp(localFileTime))
+  localFileTimeTicks = ticks(datetime.utcfromtimestamp(localFileTime))
   #print "localFileTimeTicks: " + str(localFileTimeTicks)
   for item in data:
     itemPath = str(item.get('Path'))
@@ -58,7 +58,7 @@ def uploadFile(localFilePath, mycloudFilePath):
   # date of file
   localFileTime = os.path.getmtime(localFilePath)
   #print "localFileTime:      " + str(localFileTime)
-  dateOfFile = datetime.fromtimestamp(localFileTime).strftime("%a, %d %b %Y %H:%M:%S")
+  dateOfFile = datetime.utcfromtimestamp(localFileTime).strftime("%a, %d %b %Y %H:%M:%S")
   
   # Standard base64 encoder
   encodedString = base64.b64encode(mycloudFilePath)
