@@ -54,6 +54,11 @@ def checkFileExist(localFilePath, mycloudFilePath):
     return True
   return False
 
+def fileSizeInMB(filePath, decimals):
+  fileSize = os.path.getsize(filePath)
+  fileSizeInMB = float(fileSize) / (1024 * 1024)
+  return round(fileSizeInMB, decimals)
+
 def uploadFile(localFilePath, mycloudFilePath):
   # date of file
   localFileTime = os.path.getmtime(localFilePath)
@@ -75,6 +80,7 @@ def uploadFile(localFilePath, mycloudFilePath):
   # Debug information
   print "Encoded Filename: " + encodedString
   print "Filename:         " + localFilePath
+  print "Filesize in MB:   " + str(fileSizeInMB(localFilePath, 3))
   
   # define headers for HTTP Post request
   headers = {}
