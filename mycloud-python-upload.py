@@ -9,7 +9,7 @@
 # - install python requests
 # - set parameters
 #
-# Last revised: July 17, 2016
+# Last revised: July 22, 2016
 ##########################################################################
 
 import base64
