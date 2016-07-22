@@ -31,6 +31,9 @@ mycloudFolder = "/Drive/pythonUpload/"
 def ticks(dt):
   return (dt - datetime(1, 1, 1)).total_seconds() * 10000000
 
+def numberRJust(number, referenceNumber):
+  return str(number).rjust(len(str(referenceNumber)))
+
 def checkFileExist(localFilePath, mycloudFilePath):
   #print "localFilePath:      " + localFilePath
   #print "mycloudFilePath:    " + mycloudFilePath
@@ -81,9 +84,9 @@ def uploadFile(localFilePath, mycloudFilePath):
   encodedString = encodedString.replace('/', '_')
   
   # Debug information
-  print "Encoded Filename: " + encodedString
-  print "Filename:         " + localFilePath
-  print "Filesize in MB:   " + str(fileSizeInMB(localFilePath, 3))
+  print "Encoded Filename:  %s" % (encodedString)
+  print "Filename:          %s" % (localFilePath)
+  print "Filesize in MB:    %s" % (str(fileSizeInMB(localFilePath, 3)))
   
   # define headers for HTTP Post request
   headers = {}
@@ -141,7 +144,7 @@ skippedFiles = 0
 
 # foreach file to upload
 for localFP in files:
-  print "Start Upload %s of %s" % (counter, numberOfFiles)
+  print "Start Upload %s of %s" % (numberRJust(counter, numberOfFiles), numberOfFiles)
   mycloudFP = mycloudFolder + localFP
   if (checkFileExist(localFP, mycloudFP) == False):
     try:
@@ -165,6 +168,7 @@ for localFP in files:
   counter += 1
 
 # Debug information
-print "Number of Files: %s" % (counter)
-print "Number of uploaded Files: %s" % (uploadedFiles)
-print "Number of skipped Files: %s" % (skippedFiles)
+print "Number of Files:                 %s" % (numberRJust(counter, numberOfFiles))
+print "Number of uploaded Files:        %s" % (numberRJust(uploadedFiles, numberOfFiles))
+print "Number of failed uploaded Files: %s" % (numberRJust(failedUploadedFiles, numberOfFiles))
+print "Number of skipped Files:         %s" % (numberRJust(skippedFiles, numberOfFiles))
