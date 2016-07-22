@@ -136,6 +136,7 @@ numberOfFiles = len(files)
 # define progress counter
 counter = 0
 uploadedFiles = 0
+failedUploadedFiles = 0
 skippedFiles = 0
 
 # foreach file to upload
@@ -143,8 +144,22 @@ for localFP in files:
   print "Start Upload %s of %s" % (counter, numberOfFiles)
   mycloudFP = mycloudFolder + localFP
   if (checkFileExist(localFP, mycloudFP) == False):
-    uploadFile(localFP, mycloudFP)
-    uploadedFiles += 1
+    try:
+      if (uploadFile(localFP, mycloudFP) == True):
+        uploadedFiles += 1
+      else:
+        failedUploadedFiles += 1
+    except requests.ConnectionError as e:
+      print "Oops! There was a connection error. Ensure connectivity to remote host and try again..."
+      print e
+    except requests.exceptions.Timeout as e:
+      # Maybe set up for a retry, or continue in a retry loop
+      print e
+    except requests.exceptions.TooManyRedirects:
+      # Tell the user their URL was bad and try a different one
+      print e
+    except requests.exceptions.RequestException as e:
+      print e
   else:
     skippedFiles += 1
   counter += 1
