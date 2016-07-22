@@ -50,7 +50,7 @@ def checkFileExist(localFilePath, mycloudFilePath):
   #print "localFileTimeTicks: " + str(localFileTimeTicks)
   for item in data:
     itemPath = str(item.get('Path').encode('utf-8'))
-    if (itemPath != mycloudFilePath.decode('utf-8')):
+    if (itemPath.decode('utf-8') != mycloudFilePath.decode('utf-8')):
       continue
     if ('Length' in item):
       itemSize = long(item.get('Length'))
@@ -62,6 +62,7 @@ def checkFileExist(localFilePath, mycloudFilePath):
     #itemTicks = long(item.get('ModificationTimeTicks'))
     # if (itemTicks != localFileTimeTicks):
     #   continue
+    data.remove(item)
     return True
   return False
 
