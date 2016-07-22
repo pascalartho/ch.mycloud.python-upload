@@ -40,17 +40,17 @@ def numberRJust(number, referenceNumber):
   return str(number).rjust(len(str(referenceNumber)))
 
 def checkFileExist(localFilePath, mycloudFilePath):
-  #print "localFilePath:      " + localFilePath
-  #print "mycloudFilePath:    " + mycloudFilePath
-  localFileSize = os.path.getsize(localFilePath)
+  #print "localFilePath:      " + localFilePath.decode('utf-8')
+  #print "mycloudFilePath:    " + mycloudFilePath.decode('utf-8')
+  localFileSize = os.path.getsize(localFilePath.decode('utf-8'))
   #print "localFileSize:      " + str(localFileSize)
-  localFileTime = os.path.getmtime(localFilePath)
+  localFileTime = os.path.getmtime(localFilePath.decode('utf-8'))
   #print "localFileTime:      " + str(localFileTime)
   localFileTimeTicks = ticks(datetime.utcfromtimestamp(localFileTime))
   #print "localFileTimeTicks: " + str(localFileTimeTicks)
   for item in data:
-    itemPath = str(item.get('Path'))
-    if (itemPath != mycloudFilePath):
+    itemPath = str(item.get('Path').encode('utf-8'))
+    if (itemPath != mycloudFilePath.decode('utf-8')):
       continue
     if ('Length' in item):
       itemSize = long(item.get('Length'))
@@ -66,13 +66,13 @@ def checkFileExist(localFilePath, mycloudFilePath):
   return False
 
 def fileSizeInMB(filePath, decimals):
-  fileSize = os.path.getsize(filePath)
+  fileSize = os.path.getsize(filePath.decode('utf-8'))
   fileSizeInMB = float(fileSize) / (1024 * 1024)
   return round(fileSizeInMB, decimals)
 
 def uploadFile(localFilePath, mycloudFilePath):
   # date of file
-  localFileTime = os.path.getmtime(localFilePath)
+  localFileTime = os.path.getmtime(localFilePath.decode('utf-8'))
   #print "localFileTime:      " + str(localFileTime)
   dateOfFile = datetime.utcfromtimestamp(localFileTime).strftime("%a, %d %b %Y %H:%M:%S")
   
@@ -90,7 +90,7 @@ def uploadFile(localFilePath, mycloudFilePath):
   
   # Debug information
   print "Encoded Filename:  %s" % (encodedString)
-  print "Filename:          %s" % (localFilePath)
+  print "Filename:          %s" % (localFilePath.decode('utf-8'))
   print "Filesize in MB:    %s" % (str(fileSizeInMB(localFilePath, 3)))
   
   # define headers for HTTP Post request
@@ -99,7 +99,7 @@ def uploadFile(localFilePath, mycloudFilePath):
   headers['Content-Disposition'] = 'attachment; modification-date="'+ dateOfFile + ' GMT"; filename="'+ localFilePath + '"'
   headers['User-Agent'] = 'mycloud.ch - python uploader'
   
-  dataFile = open(localFilePath, 'rb')
+  dataFile = open(localFilePath.decode('utf-8'), 'rb')
   postQuery = "https://storage.prod.mdl.swisscom.ch/object/?p=%s&access_token=%s" % (encodedString, accessToken)
   
   # Upload file using python requests
@@ -125,9 +125,9 @@ data = json.loads(array)
 
 # find files for upload
 files = list()
-for dirpath, dirnames, filenames in os.walk("."):
+for dirpath, dirnames, filenames in os.walk(u"."):
   for filename in [f for f in filenames]:
-    file = str(os.path.join(dirpath, filename))
+    file = str(os.path.join(dirpath.encode('utf-8'), filename.encode('utf-8')))
     file = file.replace("\\", '/')
     if (file.startswith(".//")):
       file = file.replace(".//", '', 1)
