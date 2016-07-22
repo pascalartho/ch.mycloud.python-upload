@@ -97,7 +97,11 @@ def uploadFile(localFilePath, mycloudFilePath):
   # Upload file using python requests
   # if needed add "verify=False" to perform "insecure" SSL connections and transfers
   # requests.post(postQuery, headers=headers, data=dataFile, verify=False)
-  requests.post(postQuery, headers=headers, data=dataFile)
+  result = requests.post(postQuery, headers=headers, data=dataFile)
+  print "Successful Upload: %s [HTTP Status %s]" % (str(r.status_code == requests.codes.ok), str(result.status_code))
+  if (result.status_code == 200):
+    return True
+  return False
 
 # change current directory
 os.chdir(localFolder)
