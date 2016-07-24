@@ -31,6 +31,7 @@ import time
 accessToken = ""
 localFolder = "/home/ubuntu/mycloud/"
 mycloudFolder = "/Drive/pythonUpload/"
+maxFileSizeInMB = 1024
 ##########################################################################
 
 def ticks(dt):
@@ -48,6 +49,11 @@ def checkFileExist(localFilePath, mycloudFilePath):
   #print "localFileTime:      " + str(localFileTime)
   localFileTimeTicks = ticks(datetime.utcfromtimestamp(localFileTime))
   #print "localFileTimeTicks: " + str(localFileTimeTicks)
+  
+  # if fileSizeInMB is bigger than maxFileSizeInMB skip file
+  if (fileSizeInMB(localFilePath, 3) > maxFileSizeInMB):
+    return True
+  
   for item in data:
     itemPath = str(item.get('Path').encode('utf-8'))
     if (itemPath.decode('utf-8') != mycloudFilePath.decode('utf-8')):

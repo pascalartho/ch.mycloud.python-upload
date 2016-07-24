@@ -15,6 +15,7 @@ Simply install python v2.7 including python module "requests" and define all par
 accessToken=""
 localFolder="/home/ubuntu/mycloud/"
 mycloudFolder="/Drive/pythonUpload/"
+maxFileSizeInMB = 1024
 ````
 
 To get your access token, you have to login to www.mycloud.ch. On the home screen, you find your already uploaded pictures. Copy a link of one picture. This link can look like this: https://library.prod.mdl.swisscom.ch/thumbnail/Storage::Photos::Asset::Z2FIcXJZdzNEQlJCT3NCMzhnRDZCQT09?width=240&height=240&access_token=YourAccessToken==
