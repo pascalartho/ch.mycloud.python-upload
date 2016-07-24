@@ -103,14 +103,32 @@ def uploadFile(localFilePath, mycloudFilePath):
   dataFile = open(localFilePath.decode('utf-8'), 'rb')
   postQuery = "https://storage.prod.mdl.swisscom.ch/object/?p=%s&access_token=%s" % (encodedString, accessToken)
   
-  # Upload file using python requests
-  # if needed add "verify=False" to perform "insecure" SSL connections and transfers
-  # result = requests.post(postQuery, headers=headers, data=dataFile, verify=False)
-  result = requests.post(postQuery, headers=headers, data=dataFile)
-  print "Successful Upload: %s [HTTP Status %s]" % (str(r.status_code == requests.codes.ok), str(result.status_code))
-  if (result.status_code == 200):
-    return True
-  return False
+  try:
+    # Upload file using python requests
+    # if needed add "verify=False" to perform "insecure" SSL connections and transfers
+    # result = requests.post(postQuery, headers=headers, data=dataFile, verify=False)
+    result = requests.post(postQuery, headers=headers, data=dataFile)
+    print "Successful Upload: %s [HTTP Status %s]" % (str(r.status_code == requests.codes.ok), str(result.status_code))
+    if (result.status_code == 200):
+      return True
+    return False
+  except requests.ConnectionError as e:
+    print "Oops! There was a connection error. Ensure connectivity to remote host and try again..."
+    print e
+    return False
+  except requests.exceptions.Timeout as e:
+    # Maybe set up for a retry, or continue in a retry loop
+    print "Oops! There was a timeout error. Ensure connectivity to remote host and try again..."
+    print e
+    return False
+  except requests.exceptions.TooManyRedirects as e:
+    # Tell the user their URL was bad and try a different one
+    print "Oops! There were too many redirects. Try a different URL ..."
+    print e
+    return False
+  except requests.exceptions.RequestException as e:
+    print e
+    return False
 
 # change current directory
 os.chdir(localFolder)
@@ -153,22 +171,10 @@ for localFP in files:
   print "Start Upload %s of %s" % (numberRJust(counter, numberOfFiles), numberOfFiles)
   mycloudFP = mycloudFolder + localFP
   if (checkFileExist(localFP, mycloudFP) == False):
-    try:
-      if (uploadFile(localFP, mycloudFP) == True):
-        uploadedFiles += 1
-      else:
-        failedUploadedFiles += 1
-    except requests.ConnectionError as e:
-      print "Oops! There was a connection error. Ensure connectivity to remote host and try again..."
-      print e
-    except requests.exceptions.Timeout as e:
-      # Maybe set up for a retry, or continue in a retry loop
-      print e
-    except requests.exceptions.TooManyRedirects:
-      # Tell the user their URL was bad and try a different one
-      print e
-    except requests.exceptions.RequestException as e:
-      print e
+    if (uploadFile(localFP, mycloudFP) == True):
+      uploadedFiles += 1
+    else:
+      failedUploadedFiles += 1
   else:
     skippedFiles += 1
   counter += 1
