@@ -143,8 +143,12 @@ os.chdir(localFolder)
 getQuery = "https://storage.prod.mdl.swisscom.ch/sync/list/%s?access_token=%s" % (mycloudFolder, accessToken)
 # if needed add "verify=False" to perform "insecure" SSL connections and transfers
 # r = requests.get(getQuery, verify=False)
-r = requests.get(getQuery)
-array = r.text
+resultGet = requests.get(getQuery)
+if (resultGet.status_code != 200):
+  print "Oops! The accessToken is not correct. Get a new accessToken and try again..."
+  quit()
+
+array = resultGet.text
 # save current list of uploaded files in array
 data = json.loads(array)
 
