@@ -10,11 +10,12 @@ The current version allows to upload files of a local directory to mycloud.ch in
 For further information visit https://www.swisscom.ch/en/residential/help/loesung/mycloud-faq.html or https://www.mycloud.ch/
 
 ## Usage
-Simply install python v2.7 including python module "requests" and define all parameters in ````mycloud-python-upload.py````:
+Simply install python v2.7 including python module "requests" and define all parameters in ````config.ini````:
 ````
-accessToken=""
-localFolder="/home/ubuntu/mycloud/"
-mycloudFolder="/Drive/pythonUpload/"
+[default]
+accessToken = YourAccessToken==
+localFolder = /home/ubuntu/mycloud/
+mycloudFolder = /Drive/pythonUpload/
 maxFileSizeInMB = 1024
 ````
 

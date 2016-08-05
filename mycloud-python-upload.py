@@ -14,6 +14,7 @@
 
 import base64
 from datetime import datetime
+import ConfigParser
 import json
 import os
 import os.path
@@ -25,14 +26,23 @@ import time
 # reload(sys)
 # sys.setdefaultencoding('utf-8')
 
+os.chdir(os.path.dirname(os.path.abspath(__file__)))
+settings = ConfigParser.ConfigParser()
+settings.read('config.ini')
+
 ##########################################################################
 # Parameters
 ##########################################################################
-accessToken = ""
-localFolder = "/home/ubuntu/mycloud/"
-mycloudFolder = "/Drive/pythonUpload/"
-maxFileSizeInMB = 1024
+accessToken = settings.get('default', 'accessToken')
+localFolder = settings.get('default', 'localFolder')
+mycloudFolder = settings.get('default', 'mycloudFolder')
+maxFileSizeInMB = settings.getint('default', 'maxFileSizeInMB')
 ##########################################################################
+
+print "Access Token:      %s" % (accessToken)
+print "Local Folder:      %s" % (localFolder)
+print "MyCloud Folder:    %s" % (mycloudFolder)
+print "MaxFileSize in MB: %s" % (maxFileSizeInMB)
 
 def ticks(dt):
   return (dt - datetime(1, 1, 1)).total_seconds() * 10000000
