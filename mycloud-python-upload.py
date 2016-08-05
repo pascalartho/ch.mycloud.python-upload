@@ -9,7 +9,7 @@
 # - install python requests
 # - set parameters
 #
-# Last revised: July 22, 2016
+# Last revised: August 05, 2016
 ##########################################################################
 
 import base64
@@ -142,7 +142,7 @@ os.chdir(localFolder)
 # get current list of uploaded files
 getQuery = "https://storage.prod.mdl.swisscom.ch/sync/list/%s?access_token=%s" % (mycloudFolder, accessToken)
 # if needed add "verify=False" to perform "insecure" SSL connections and transfers
-# r = requests.get(getQuery, verify=False)
+# resultGet = requests.get(getQuery, verify=False)
 resultGet = requests.get(getQuery)
 if (resultGet.status_code != 200):
   print "Oops! The accessToken is not correct. Get a new accessToken and try again..."
