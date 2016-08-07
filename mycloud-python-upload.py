@@ -115,9 +115,10 @@ def uploadFile(localFilePath, mycloudFilePath):
   headers['Content-Type'] = 'application/octet-stream'
   headers['Content-Disposition'] = 'attachment; modification-date="'+ dateOfFile + ' GMT"; filename="'+ localFilePath + '"'
   headers['User-Agent'] = 'mycloud.ch - python uploader'
+  headers['Authorization'] = 'Bearer ' + accessToken
   
   dataFile = open(localFilePath.decode('utf-8'), 'rb')
-  postQuery = "https://storage.prod.mdl.swisscom.ch/object/?p=%s&access_token=%s" % (encodedString, accessToken)
+  postQuery = "https://storage.prod.mdl.swisscom.ch/object/?p=%s" % (encodedString)
   
   try:
     # Upload file using python requests
@@ -150,10 +151,14 @@ def uploadFile(localFilePath, mycloudFilePath):
 os.chdir(localFolder)
 
 # get current list of uploaded files
-getQuery = "https://storage.prod.mdl.swisscom.ch/sync/list/%s?access_token=%s" % (mycloudFolder, accessToken)
+headers = {}
+headers['User-Agent'] = 'mycloud.ch - python uploader'
+headers['Authorization'] = 'Bearer ' + accessToken
+
+getQuery = "https://storage.prod.mdl.swisscom.ch/sync/list/%s" % (mycloudFolder)
 # if needed add "verify=False" to perform "insecure" SSL connections and transfers
-# resultGet = requests.get(getQuery, verify=False)
-resultGet = requests.get(getQuery)
+# resultGet = requests.get(getQuery, headers=headers, verify=False)
+resultGet = requests.get(getQuery, headers=headers)
 if (resultGet.status_code != 200):
   print "Oops! The accessToken is not correct. Get a new accessToken and try again..."
   quit()
