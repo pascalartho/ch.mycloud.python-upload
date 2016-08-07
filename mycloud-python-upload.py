@@ -116,6 +116,7 @@ def uploadFile(localFilePath, mycloudFilePath):
   headers['Content-Disposition'] = 'attachment; modification-date="'+ dateOfFile + ' GMT"; filename="'+ localFilePath + '"'
   headers['User-Agent'] = 'mycloud.ch - python uploader'
   headers['Authorization'] = 'Bearer ' + accessToken
+  headers['Connection'] = 'keep-alive'
   
   dataFile = open(localFilePath.decode('utf-8'), 'rb')
   postQuery = "https://storage.prod.mdl.swisscom.ch/object/?p=%s" % (encodedString)
