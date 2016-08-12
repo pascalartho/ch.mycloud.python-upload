@@ -87,14 +87,9 @@ def fileSizeInMB(filePath, decimals):
   fileSizeInMB = float(fileSize) / (1024 * 1024)
   return round(fileSizeInMB, decimals)
 
-def uploadFile(localFilePath, mycloudFilePath):
-  # date of file
-  localFileTime = os.path.getmtime(localFilePath.decode('utf-8'))
-  #print "localFileTime:      " + str(localFileTime)
-  dateOfFile = datetime.utcfromtimestamp(localFileTime).strftime("%a, %d %b %Y %H:%M:%S")
-  
+def encodeString(path):
   # Standard base64 encoder
-  encodedString = base64.b64encode(mycloudFilePath)
+  encodedString = base64.b64encode(path)
   
   # Remove any trailing '='
   encodedString = encodedString.split('=')[0]
@@ -104,6 +99,15 @@ def uploadFile(localFilePath, mycloudFilePath):
   
   # 63rd char of encoding
   encodedString = encodedString.replace('/', '_')
+  return encodedString
+
+def uploadFile(localFilePath, mycloudFilePath):
+  # date of file
+  localFileTime = os.path.getmtime(localFilePath.decode('utf-8'))
+  #print "localFileTime:      " + str(localFileTime)
+  dateOfFile = datetime.utcfromtimestamp(localFileTime).strftime("%a, %d %b %Y %H:%M:%S")
+  
+  encodedString = encodeString(mycloudFilePath)
   
   # Debug information
   print "Encoded Filename:  %s" % (encodedString)
@@ -151,12 +155,14 @@ def uploadFile(localFilePath, mycloudFilePath):
 # change current directory
 os.chdir(localFolder)
 
+encodedString = encodeString(mycloudFolder)
+
 # get current list of uploaded files
 headers = {}
 headers['User-Agent'] = 'mycloud.ch - python uploader'
 headers['Authorization'] = 'Bearer ' + accessToken
 
-getQuery = "https://storage.prod.mdl.swisscom.ch/sync/list/%s" % (mycloudFolder)
+getQuery = "https://storage.prod.mdl.swisscom.ch/sync/list/?p=%s" % (encodedString)
 # if needed add "verify=False" to perform "insecure" SSL connections and transfers
 # resultGet = requests.get(getQuery, headers=headers, verify=False)
 resultGet = requests.get(getQuery, headers=headers)
