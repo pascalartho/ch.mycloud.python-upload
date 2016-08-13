@@ -197,6 +197,7 @@ numberOfFiles = len(files)
 # define progress counter
 counter = 1
 uploadedFiles = 0
+uploadedFilesMB = 0
 failedUploadedFiles = 0
 skippedFiles = 0
 skippedFilesSize = 0
@@ -209,6 +210,7 @@ for localFP in files:
     if (checkFileSize(localFP) == True):
       if (uploadFile(localFP, mycloudFP) == True):
         uploadedFiles += 1
+        uploadedFilesMB += fileSizeInMB(localFP, 3)
       else:
         failedUploadedFiles += 1
     else:
@@ -219,7 +221,7 @@ for localFP in files:
 
 # Debug information
 print "Number of Files:                             %s" % (numberRJust(counter, numberOfFiles))
-print "Number of uploaded Files:                    %s" % (numberRJust(uploadedFiles, numberOfFiles))
+print "Number of uploaded Files:                    %s (%s MB)" % (numberRJust(uploadedFiles, numberOfFiles), str(uploadedFilesMB))
 print "Number of failed uploaded Files:             %s" % (numberRJust(failedUploadedFiles, numberOfFiles))
 print "Number of skipped Files (already existing):  %s" % (numberRJust(skippedFiles, numberOfFiles))
 print "Number of skipped Files (too big to upload): %s (> %s MB)" % (numberRJust(skippedFilesSize, numberOfFiles), maxFileSizeInMB)
