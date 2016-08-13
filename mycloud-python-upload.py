@@ -195,7 +195,7 @@ files.sort()
 numberOfFiles = len(files)
 
 # define progress counter
-counter = 0
+counter = 1
 uploadedFiles = 0
 failedUploadedFiles = 0
 skippedFiles = 0
