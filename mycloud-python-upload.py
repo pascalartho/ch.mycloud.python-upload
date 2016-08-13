@@ -9,7 +9,7 @@
 # - install python requests
 # - set parameters
 #
-# Last revised: August 12, 2016
+# Last revised: August 13, 2016
 ##########################################################################
 
 import base64
@@ -50,6 +50,12 @@ def ticks(dt):
 def numberRJust(number, referenceNumber):
   return str(number).rjust(len(str(referenceNumber)))
 
+def checkFileSize(localFilePath):
+  # if fileSizeInMB is bigger than maxFileSizeInMB skip file
+  if (fileSizeInMB(localFilePath, 3) > maxFileSizeInMB):
+    return False
+  return True
+
 def checkFileExist(localFilePath, mycloudFilePath):
   #print "localFilePath:      " + localFilePath.decode('utf-8')
   #print "mycloudFilePath:    " + mycloudFilePath.decode('utf-8')
@@ -59,10 +65,6 @@ def checkFileExist(localFilePath, mycloudFilePath):
   #print "localFileTime:      " + str(localFileTime)
   localFileTimeTicks = ticks(datetime.utcfromtimestamp(localFileTime))
   #print "localFileTimeTicks: " + str(localFileTimeTicks)
-  
-  # if fileSizeInMB is bigger than maxFileSizeInMB skip file
-  if (fileSizeInMB(localFilePath, 3) > maxFileSizeInMB):
-    return True
   
   for item in data:
     itemPath = str(item.get('Path').encode('utf-8'))
@@ -197,22 +199,27 @@ counter = 0
 uploadedFiles = 0
 failedUploadedFiles = 0
 skippedFiles = 0
+skippedFilesSize = 0
 
 # foreach file to upload
 for localFP in files:
   print "Start Upload %s of %s" % (numberRJust(counter, numberOfFiles), numberOfFiles)
   mycloudFP = mycloudFolder + localFP
   if (checkFileExist(localFP, mycloudFP) == False):
-    if (uploadFile(localFP, mycloudFP) == True):
-      uploadedFiles += 1
+    if (checkFileSize(localFP) == True):
+      if (uploadFile(localFP, mycloudFP) == True):
+        uploadedFiles += 1
+      else:
+        failedUploadedFiles += 1
     else:
-      failedUploadedFiles += 1
+      skippedFilesSize += 1
   else:
     skippedFiles += 1
   counter += 1
 
 # Debug information
-print "Number of Files:                 %s" % (numberRJust(counter, numberOfFiles))
-print "Number of uploaded Files:        %s" % (numberRJust(uploadedFiles, numberOfFiles))
-print "Number of failed uploaded Files: %s" % (numberRJust(failedUploadedFiles, numberOfFiles))
-print "Number of skipped Files:         %s" % (numberRJust(skippedFiles, numberOfFiles))
+print "Number of Files:                             %s" % (numberRJust(counter, numberOfFiles))
+print "Number of uploaded Files:                    %s" % (numberRJust(uploadedFiles, numberOfFiles))
+print "Number of failed uploaded Files:             %s" % (numberRJust(failedUploadedFiles, numberOfFiles))
+print "Number of skipped Files (already existing):  %s" % (numberRJust(skippedFiles, numberOfFiles))
+print "Number of skipped Files (too big to upload): %s (> %s MB)" % (numberRJust(skippedFilesSize, numberOfFiles), maxFileSizeInMB)
