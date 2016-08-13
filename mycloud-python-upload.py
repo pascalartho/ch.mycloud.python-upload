@@ -220,7 +220,7 @@ for localFP in files:
   counter += 1
 
 # Debug information
-print "Number of Files:                             %s" % (numberRJust(counter, numberOfFiles))
+print "Number of Files:                             %s" % (numberRJust(numberOfFiles, numberOfFiles))
 print "Number of uploaded Files:                    %s (%s MB)" % (numberRJust(uploadedFiles, numberOfFiles), str(uploadedFilesMB))
 print "Number of failed uploaded Files:             %s" % (numberRJust(failedUploadedFiles, numberOfFiles))
 print "Number of skipped Files (already existing):  %s" % (numberRJust(skippedFiles, numberOfFiles))
