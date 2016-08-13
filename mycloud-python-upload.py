@@ -202,22 +202,27 @@ failedUploadedFiles = 0
 skippedFiles = 0
 skippedFilesSize = 0
 
-# foreach file to upload
-for localFP in files:
-  print "Start Upload %s of %s" % (numberRJust(counter, numberOfFiles), numberOfFiles)
-  mycloudFP = mycloudFolder + localFP
-  if (checkFileExist(localFP, mycloudFP) == False):
-    if (checkFileSize(localFP) == True):
-      if (uploadFile(localFP, mycloudFP) == True):
-        uploadedFiles += 1
-        uploadedFilesMB += fileSizeInMB(localFP, 3)
+try:
+  # foreach file to upload
+  for localFP in files:
+    print "Start Upload %s of %s" % (numberRJust(counter, numberOfFiles), numberOfFiles)
+    mycloudFP = mycloudFolder + localFP
+    if (checkFileExist(localFP, mycloudFP) == False):
+      if (checkFileSize(localFP) == True):
+        if (uploadFile(localFP, mycloudFP) == True):
+          uploadedFiles += 1
+          uploadedFilesMB += fileSizeInMB(localFP, 3)
+        else:
+          failedUploadedFiles += 1
       else:
-        failedUploadedFiles += 1
+        skippedFilesSize += 1
     else:
-      skippedFilesSize += 1
-  else:
-    skippedFiles += 1
-  counter += 1
+      skippedFiles += 1
+    counter += 1
+except KeyboardInterrupt, e:
+  print "\n##############################"
+  print "Abort upload to mycloud.ch ..."
+  print "##############################\n"
 
 # Debug information
 print "Number of Files:                             %s" % (numberRJust(numberOfFiles, numberOfFiles))
