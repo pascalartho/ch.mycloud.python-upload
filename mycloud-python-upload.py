@@ -196,10 +196,9 @@ numberOfFiles = len(files)
 
 # define progress counter
 counter = 1
-uploadedFiles = 0
-uploadedFilesMB = 0
-failedUploadedFiles = 0
-skippedFiles = 0
+uploadedFiles = {}
+failedUploadedFiles = {}
+skippedFiles = {}
 skippedFilesSize = {}
 
 try:
@@ -207,17 +206,17 @@ try:
   for localFP in files:
     print "Start Upload %s of %s" % (numberRJust(counter, numberOfFiles), numberOfFiles)
     mycloudFP = mycloudFolder + localFP
+    fileSize = fileSizeInMB(localFP, 3)
     if (checkFileExist(localFP, mycloudFP) == False):
       if (checkFileSize(localFP) == True):
         if (uploadFile(localFP, mycloudFP) == True):
-          uploadedFiles += 1
-          uploadedFilesMB += fileSizeInMB(localFP, 3)
+          uploadedFiles[localFP] = fileSize
         else:
-          failedUploadedFiles += 1
+          failedUploadedFiles[localFP] = fileSize
       else:
-        skippedFilesSize[localFP] = fileSizeInMB(localFP, 3)
+        skippedFilesSize[localFP] = fileSize
     else:
-      skippedFiles += 1
+      skippedFiles[localFP] = fileSize
     counter += 1
 except KeyboardInterrupt, e:
   print "\n##############################"
@@ -226,10 +225,11 @@ except KeyboardInterrupt, e:
 
 # Debug information
 print "Number of Files:                             %s" % (numberRJust(numberOfFiles, numberOfFiles))
-print "Number of uploaded Files:                    %s (%s MB)" % (numberRJust(uploadedFiles, numberOfFiles), str(uploadedFilesMB))
-print "Number of failed uploaded Files:             %s" % (numberRJust(failedUploadedFiles, numberOfFiles))
-print "Number of skipped Files (already existing):  %s" % (numberRJust(skippedFiles, numberOfFiles))
+print "Number of uploaded Files:                    %s (%s MB)" % (numberRJust(len(uploadedFiles), numberOfFiles), sum(uploadedFiles.values()))
+print "Number of failed uploaded Files:             %s (%s MB)" % (numberRJust(len(failedUploadedFiles), numberOfFiles), sum(failedUploadedFiles.values()))
+for key, value in sorted(failedUploadedFiles.items()):
+  print "  - %s (%s MB)" % (key, value)
+print "Number of skipped Files (already existing):  %s (%s MB)" % (numberRJust(len(skippedFiles), numberOfFiles), sum(skippedFiles.values()))
 print "Number of skipped Files (too big to upload): %s (> %s MB)" % (numberRJust(len(skippedFilesSize), numberOfFiles), maxFileSizeInMB)
-
 for key, value in sorted(skippedFilesSize.items()):
-  print "  - %s (%s MB)" % (key, str(value))
+  print "  - %s (%s MB)" % (key, value)
