@@ -200,7 +200,7 @@ uploadedFiles = 0
 uploadedFilesMB = 0
 failedUploadedFiles = 0
 skippedFiles = 0
-skippedFilesSize = 0
+skippedFilesSize = {}
 
 try:
   # foreach file to upload
@@ -215,7 +215,7 @@ try:
         else:
           failedUploadedFiles += 1
       else:
-        skippedFilesSize += 1
+        skippedFilesSize[localFP] = fileSizeInMB(localFP, 3)
     else:
       skippedFiles += 1
     counter += 1
@@ -229,4 +229,7 @@ print "Number of Files:                             %s" % (numberRJust(numberOfF
 print "Number of uploaded Files:                    %s (%s MB)" % (numberRJust(uploadedFiles, numberOfFiles), str(uploadedFilesMB))
 print "Number of failed uploaded Files:             %s" % (numberRJust(failedUploadedFiles, numberOfFiles))
 print "Number of skipped Files (already existing):  %s" % (numberRJust(skippedFiles, numberOfFiles))
-print "Number of skipped Files (too big to upload): %s (> %s MB)" % (numberRJust(skippedFilesSize, numberOfFiles), maxFileSizeInMB)
+print "Number of skipped Files (too big to upload): %s (> %s MB)" % (numberRJust(len(skippedFilesSize), numberOfFiles), maxFileSizeInMB)
+
+for key, value in sorted(skippedFilesSize.items()):
+  print "  - %s (%s MB)" % (key, str(value))
