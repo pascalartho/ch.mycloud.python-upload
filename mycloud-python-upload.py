@@ -157,6 +157,10 @@ def uploadFile(localFilePath, mycloudFilePath):
     print e
     return False
 
+def printHashmap(hashmap):
+  for key, value in sorted(hashmap.items()):
+    print "  - %s (%s MB)" % (key.decode('utf-8'), value)
+
 # change current directory
 os.chdir(localFolder)
 
@@ -235,9 +239,7 @@ except KeyboardInterrupt, e:
 print "Number of Files:                             %s" % (numberRJust(numberOfFiles, numberOfFiles))
 print "Number of uploaded Files:                    %s (%s MB)" % (numberRJust(len(uploadedFiles), numberOfFiles), sum(uploadedFiles.values()))
 print "Number of failed uploaded Files:             %s (%s MB)" % (numberRJust(len(failedUploadedFiles), numberOfFiles), sum(failedUploadedFiles.values()))
-for key, value in sorted(failedUploadedFiles.items()):
-  print "  - %s (%s MB)" % (key.decode('utf-8'), value)
+printHashmap(failedUploadedFiles)
 print "Number of skipped Files (already existing):  %s (%s MB)" % (numberRJust(len(skippedFiles), numberOfFiles), sum(skippedFiles.values()))
 print "Number of skipped Files (too big to upload): %s (> %s MB, %s MB)" % (numberRJust(len(skippedFilesSize), numberOfFiles), maxFileSizeInMB, sum(skippedFilesSize.values()))
-for key, value in sorted(skippedFilesSize.items()):
-  print "  - %s (%s MB)" % (key.decode('utf-8'), value)
+printHashmap(skippedFilesSize)
