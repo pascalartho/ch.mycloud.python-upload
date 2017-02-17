@@ -37,12 +37,14 @@ accessToken = settings.get('default', 'accessToken')
 localFolder = settings.get('default', 'localFolder')
 mycloudFolder = settings.get('default', 'mycloudFolder')
 maxFileSizeInMB = settings.getint('default', 'maxFileSizeInMB')
+numberOfRetries = settings.getint('default', 'numberOfRetries')
 ##########################################################################
 
 print "Access Token:      %s" % (accessToken)
 print "Local Folder:      %s" % (localFolder)
 print "MyCloud Folder:    %s" % (mycloudFolder)
 print "MaxFileSize in MB: %s" % (maxFileSizeInMB)
+print "Number of Retries: %s" % (numberOfRetries)
 
 def ticks(dt):
   return (dt - datetime(1, 1, 1)).total_seconds() * 10000000
@@ -209,7 +211,12 @@ try:
     fileSize = fileSizeInMB(localFP, 3)
     if (checkFileExist(localFP, mycloudFP) == False):
       if (checkFileSize(localFP) == True):
-        if (uploadFile(localFP, mycloudFP) == True):
+        uploadcompleted = False
+        numberOfTries = 0
+        while (uploadcompleted == False and numberOfTries < numberOfRetries):
+          uploadcompleted = uploadFile(localFP, mycloudFP)
+          numberOfTries += 1
+        if (uploadcompleted):
           uploadedFiles[localFP] = fileSize
         else:
           failedUploadedFiles[localFP] = fileSize
