@@ -182,6 +182,13 @@ if (resultGet.status_code != 200):
 array = resultGet.text
 # save current list of uploaded files in array
 data = json.loads(array)
+dataList = []
+
+for item in data:
+  if ('Length' in item):
+    dataList.append(item)
+
+data = dataList
 
 # find files for upload
 files = list()
