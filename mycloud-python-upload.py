@@ -114,6 +114,7 @@ def uploadFile(localFilePath, mycloudFilePath):
   encodedString = encodeString(mycloudFilePath)
   
   # Debug information
+  print "Start Upload Time: %s" % (datetime.now())
   print "Encoded Filename:  %s" % (encodedString)
   print "Filename:          %s" % (localFilePath.decode('utf-8'))
   print "Filesize in MB:    %s" % (str(fileSizeInMB(localFilePath, 3)))
@@ -235,8 +236,8 @@ print "Number of Files:                             %s" % (numberRJust(numberOfF
 print "Number of uploaded Files:                    %s (%s MB)" % (numberRJust(len(uploadedFiles), numberOfFiles), sum(uploadedFiles.values()))
 print "Number of failed uploaded Files:             %s (%s MB)" % (numberRJust(len(failedUploadedFiles), numberOfFiles), sum(failedUploadedFiles.values()))
 for key, value in sorted(failedUploadedFiles.items()):
-  print "  - %s (%s MB)" % (key, value)
+  print "  - %s (%s MB)" % (key.decode('utf-8'), value)
 print "Number of skipped Files (already existing):  %s (%s MB)" % (numberRJust(len(skippedFiles), numberOfFiles), sum(skippedFiles.values()))
-print "Number of skipped Files (too big to upload): %s (> %s MB)" % (numberRJust(len(skippedFilesSize), numberOfFiles), maxFileSizeInMB)
+print "Number of skipped Files (too big to upload): %s (> %s MB, %s MB)" % (numberRJust(len(skippedFilesSize), numberOfFiles), maxFileSizeInMB, sum(skippedFilesSize.values()))
 for key, value in sorted(skippedFilesSize.items()):
-  print "  - %s (%s MB)" % (key, value)
+  print "  - %s (%s MB)" % (key.decode('utf-8'), value)
