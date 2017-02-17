@@ -37,6 +37,7 @@ accessToken = settings.get('default', 'accessToken')
 localFolder = settings.get('default', 'localFolder')
 mycloudFolder = settings.get('default', 'mycloudFolder')
 maxFileSizeInMB = settings.getint('default', 'maxFileSizeInMB')
+cleanup = settings.getboolean('default', 'cleanup')
 numberOfRetries = settings.getint('default', 'numberOfRetries')
 ##########################################################################
 
@@ -44,6 +45,7 @@ print "Access Token:      %s" % (accessToken)
 print "Local Folder:      %s" % (localFolder)
 print "MyCloud Folder:    %s" % (mycloudFolder)
 print "MaxFileSize in MB: %s" % (maxFileSizeInMB)
+print "Cleanup Files:     %s" % (cleanup)
 print "Number of Retries: %s" % (numberOfRetries)
 
 def ticks(dt):
@@ -160,6 +162,48 @@ def uploadFile(localFilePath, mycloudFilePath):
     print e
     return False
 
+def cleanupFile(mycloudFilePath):
+  encodedString = encodeString(mycloudFilePath)
+  
+  # Debug information
+  print "Encoded Filename:  %s" % (encodedString)
+  print "Filename:          %s" % (mycloudFilePath.decode('utf-8'))
+  
+  # define headers for HTTP DELETE request
+  headers = {}
+  headers['User-Agent'] = 'mycloud.ch - python uploader'
+  headers['Authorization'] = 'Bearer ' + accessToken
+  
+  # dataFile = open(localFilePath.decode('utf-8'), 'rb')
+  deleteQuery = "https://storage.prod.mdl.swisscom.ch/object/?p=%s" % (encodedString)
+
+  try:
+    # Upload file using python requests
+    # if needed add "verify=False" to perform "insecure" SSL connections and transfers
+    # result = requests.delete(deleteQuery, headers=headers, verify=False)
+    result = requests.delete(deleteQuery, headers=headers)
+    print "Successful Delete: %s [HTTP Status %s]" % (str(result.status_code == requests.codes.ok), str(result.status_code))
+    if (result.status_code == 200):
+      return True
+    return False
+  except requests.ConnectionError as e:
+    print "Oops! There was a connection error. Ensure connectivity to remote host and try again..."
+    print e
+    return False
+  except requests.exceptions.Timeout as e:
+    # Maybe set up for a retry, or continue in a retry loop
+    print "Oops! There was a timeout error. Ensure connectivity to remote host and try again..."
+    print e
+    return False
+  except requests.exceptions.TooManyRedirects as e:
+    # Tell the user their URL was bad and try a different one
+    print "Oops! There were too many redirects. Try a different URL ..."
+    print e
+    return False
+  except requests.exceptions.RequestException as e:
+    print e
+    return False
+
 def printHashmap(hashmap):
   for key, value in sorted(hashmap.items()):
     print "  - %s (%s MB)" % (key.decode('utf-8'), value)
@@ -217,6 +261,10 @@ uploadedFiles = {}
 failedUploadedFiles = {}
 skippedFiles = {}
 skippedFilesSize = {}
+deletedFiles = {}
+failedDeletedFiles = {}
+filesToCleanup = {}
+aborted = False
 
 try:
   # foreach file to upload
@@ -240,10 +288,27 @@ try:
     else:
       skippedFiles[localFP] = fileSize
     counter += 1
+  if (cleanup):
+    counter = 1
+    for item in data:
+      print "Start Cleanup %s of %s" % (numberRJust(counter, len(data)), len(data))
+      itemPath = item.get('Path')
+      itemLength = item.get('Length')
+      if (cleanupFile(itemPath)):
+        deletedFiles[itemPath] = sizeInMB(itemLength, 3)
+      else:
+        failedDeletedFiles[itemPath] = sizeInMB(itemLength, 3)
+      counter += 1
+  else:
+    for item in data:
+      itemPath = item.get('Path')
+      itemLength = item.get('Length')
+      filesToCleanup[itemPath] = sizeInMB(itemLength, 3)
 except KeyboardInterrupt, e:
   print "\n##############################"
   print "Abort upload to mycloud.ch ..."
   print "##############################\n"
+  aborted = True
 
 # Debug information
 print "Number of Files:                             %s" % (numberRJust(numberOfFiles, numberOfFiles))
@@ -253,3 +318,12 @@ printHashmap(failedUploadedFiles)
 print "Number of skipped Files (already existing):  %s (%s MB)" % (numberRJust(len(skippedFiles), numberOfFiles), sum(skippedFiles.values()))
 print "Number of skipped Files (too big to upload): %s (> %s MB, %s MB)" % (numberRJust(len(skippedFilesSize), numberOfFiles), maxFileSizeInMB, sum(skippedFilesSize.values()))
 printHashmap(skippedFilesSize)
+
+if (cleanup):
+  print "Number of deleteded Files:                   %s (%s MB)" % (numberRJust(len(deletedFiles), numberOfFiles), sum(deletedFiles.values()))
+  printHashmap(deletedFiles)
+  printHashmap(failedDeletedFiles)
+else:
+  if not aborted:
+    print "Number of Files to cleanup:                  %s (%s MB)" % (numberRJust(len(filesToCleanup), numberOfFiles), sum(filesToCleanup.values()))
+    printHashmap(filesToCleanup)
