@@ -88,8 +88,11 @@ def checkFileExist(localFilePath, mycloudFilePath):
 
 def fileSizeInMB(filePath, decimals):
   fileSize = os.path.getsize(filePath.decode('utf-8'))
-  fileSizeInMB = float(fileSize) / (1024 * 1024)
-  return round(fileSizeInMB, decimals)
+  return sizeInMB(fileSize, decimals)
+
+def sizeInMB(fileSize, decimals):
+  sizeInMB = float(fileSize) / (1024 * 1024)
+  return round(sizeInMB, decimals)
 
 def encodeString(path):
   # Standard base64 encoder
