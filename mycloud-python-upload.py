@@ -9,7 +9,7 @@
 # - install python requests
 # - set parameters
 #
-# Last revised: August 13, 2016
+# Last revised: July 8, 2017
 ##########################################################################
 
 import base64
@@ -127,7 +127,7 @@ def uploadFile(localFilePath, mycloudFilePath):
   # define headers for HTTP Post request
   headers = {}
   headers['Content-Type'] = 'application/octet-stream'
-  headers['Content-Disposition'] = 'attachment; modification-date="'+ dateOfFile + ' GMT"; filename="'+ localFilePath + '"'
+  headers['Content-Disposition'] = 'attachment; modification-date="'+ dateOfFile + ' GMT";'
   headers['User-Agent'] = 'mycloud.ch - python uploader'
   headers['Authorization'] = 'Bearer ' + accessToken
   headers['Connection'] = 'keep-alive'
